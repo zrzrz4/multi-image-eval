@@ -1,0 +1,158 @@
+{
+  "title": "MultiBanana",
+  "description": "多参考图文生图官方 benchmark（CVPR 2026）。36 类任务，Gemini 五维评测 1-10 分。",
+  "intro": "支持全量 / smoke / 按类别筛选。数据需事先下载到 data/multibanana/。",
+  "eval_mode": "gemini_5dim",
+  "viewer": {
+    "enabled": true,
+    "title": "MultiBanana",
+    "data_file": "multibanana.json",
+    "score_scale": 10,
+    "samples_per_task_all": 3,
+    "samples_per_task_filtered": 6,
+    "dimensions": [
+      {"key": "instruction_alignment", "label": "指令"},
+      {"key": "reference_consistency", "label": "参考"},
+      {"key": "background_subject_match", "label": "背景"},
+      {"key": "physical_realism", "label": "物理"},
+      {"key": "visual_quality", "label": "画质"}
+    ]
+  },
+  "fingerprint": {
+    "param_keys": [
+      "dataset_mode",
+      "samples_per_task",
+      "task_types",
+      "num_inference_steps",
+      "seed",
+      "true_cfg_scale",
+      "judge_model",
+      "eval_nproc",
+      "eval_inline",
+      "gen_only",
+      "eval_only"
+    ]
+  },
+  "paths": {
+    "data_subdir": "multibanana",
+    "output_subdir": "multibanana"
+  },
+  "runner": {
+    "script": "benchmarks/multibanana/run.py",
+    "module": "benchmarks.multibanana.run"
+  },
+  "artifacts": {
+    "progress_file": "multibanana_progress.json",
+    "progress_shard_pattern": "multibanana_progress_shard{shard}.json",
+    "eval_summary": "eval_multibanana.json"
+  },
+  "scripts": {
+    "download": "benchmarks/multibanana/download_data.py",
+    "export": "benchmarks/multibanana/export_viewer.py"
+  },
+  "param_groups": {
+    "data": "数据范围",
+    "inference": "生成参数",
+    "eval": "评测参数",
+    "advanced": "高级"
+  },
+  "params": [
+    {
+      "key": "dataset_mode",
+      "label": "数据范围",
+      "type": "select",
+      "group": "data",
+      "default": "full",
+      "options": [
+        { "value": "full", "label": "全量（metadata 内全部样本）" },
+        { "value": "smoke", "label": "Smoke 抽样" }
+      ]
+    },
+    {
+      "key": "samples_per_task",
+      "label": "每类样本数",
+      "type": "int",
+      "group": "data",
+      "default": 2,
+      "min": 1,
+      "max": 100,
+      "show_when": { "dataset_mode": "smoke" },
+      "hint": "仅在 Smoke 模式下生效；全量 metadata 下按类截断"
+    },
+    {
+      "key": "task_types",
+      "label": "任务类别",
+      "type": "multiselect",
+      "group": "data",
+      "default": [],
+      "dynamic_options": "task_types",
+      "hint": "不选 = 全部 36 类；可只测部分类别"
+    },
+    {
+      "key": "num_inference_steps",
+      "label": "采样步数",
+      "type": "int",
+      "group": "inference",
+      "default": 50,
+      "min": 10,
+      "max": 100
+    },
+    {
+      "key": "seed",
+      "label": "随机种子",
+      "type": "int",
+      "group": "inference",
+      "default": 49
+    },
+    {
+      "key": "true_cfg_scale",
+      "label": "CFG (true_cfg_scale)",
+      "type": "float",
+      "group": "inference",
+      "default": 4.0,
+      "min": 1.0,
+      "max": 10.0,
+      "step": 0.5
+    },
+    {
+      "key": "judge_model",
+      "label": "裁判模型",
+      "type": "select",
+      "group": "eval",
+      "default": "",
+      "dynamic_options": "judge_models",
+      "hint": "留空则使用顶部「裁判配置」中的全局默认；流水线模式下与 GPU 出图并行，并发数由本项控制"
+    },
+    {
+      "key": "eval_nproc",
+      "label": "评测并发数",
+      "type": "int",
+      "group": "eval",
+      "default": 8,
+      "min": 1,
+      "max": 32
+    },
+    {
+      "key": "eval_inline",
+      "label": "生成后立即评测",
+      "type": "bool",
+      "group": "eval",
+      "default": true,
+      "hint": "开启后 GPU 出图与 Gemini 评测并行（不等 API 返回即出下一张）"
+    },
+    {
+      "key": "gen_only",
+      "label": "仅生成（不评测）",
+      "type": "bool",
+      "group": "advanced",
+      "default": false
+    },
+    {
+      "key": "eval_only",
+      "label": "仅评测（跳过生成）",
+      "type": "bool",
+      "group": "advanced",
+      "default": false
+    }
+  ]
+}

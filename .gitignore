@@ -1,0 +1,44 @@
+# Secrets & local config
+.env
+.env.*
+!.env.example
+
+# Runtime data
+jobs/
+outputs/
+logs/
+data/
+frontend/viewer_data/*.json
+.platform/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venvs/
+venv/
+
+# Node
+node_modules/
+frontend/console/node_modules/
+frontend/eval-viewer/node_modules/
+
+# Build (rebuild with npm run build)
+frontend/console/dist/
+frontend/eval-viewer/dist/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Archives / staging
+dist-github/
+*.tar.gz
+migrate/export/
+
+# Local weight overrides (optional per machine)
+config/custom_weights.json

@@ -1,0 +1,152 @@
+{
+  "title": "Edit-Compass Part5",
+  "description": "Edit-Compass 多图编辑 Part5：多图感知 / 多图合成 / 虚拟试穿，共 187 条。Gemini 四维评测（IF / IC / URC / VQ）。",
+  "intro": "需单独准备 Edit-Compass Part5 数据与流水线。设置环境变量 EDIT_COMPASS_ROOT 指向该项目根目录，或在 manifest.json 的 paths 中填写 data_root / project_root。",
+  "eval_mode": "gemini_4dim",
+  "viewer": {
+    "enabled": true,
+    "title": "Edit-Compass Part5",
+    "data_file": "edit_compass_part5.json",
+    "score_scale": 5,
+    "samples_per_task_all": 3,
+    "samples_per_task_filtered": 6,
+    "dimensions": [
+      { "key": "if", "label": "IF" },
+      { "key": "ic", "label": "IC" },
+      { "key": "urc", "label": "URC" },
+      { "key": "vq", "label": "VQ" }
+    ]
+  },
+  "fingerprint": {
+    "param_keys": [
+      "dataset_mode",
+      "samples_per_task",
+      "task_types",
+      "language",
+      "num_inference_steps",
+      "seed",
+      "full_gpu",
+      "judge_model",
+      "eval_nproc",
+      "gen_only",
+      "eval_only"
+    ]
+  },
+  "paths": {
+    "output_subdir": "edit_compass_part5"
+  },
+  "runner": {
+    "script": "benchmarks/edit_compass_part5/run.py",
+    "gpu_mode": "shared_pipeline"
+  },
+  "artifacts": {
+    "progress_file": "edit_compass_part5_progress.json",
+    "eval_summary": "eval_part5.json"
+  },
+  "param_groups": {
+    "data": "数据范围",
+    "inference": "生成参数",
+    "eval": "评测参数",
+    "advanced": "高级"
+  },
+  "params": [
+    {
+      "key": "dataset_mode",
+      "label": "数据范围",
+      "type": "select",
+      "group": "data",
+      "default": "full",
+      "options": [
+        { "value": "full", "label": "全量（187 条）" },
+        { "value": "smoke", "label": "Smoke 抽样" }
+      ]
+    },
+    {
+      "key": "samples_per_task",
+      "label": "每类样本数",
+      "type": "int",
+      "group": "data",
+      "default": 2,
+      "min": 1,
+      "max": 100,
+      "show_when": { "dataset_mode": "smoke" },
+      "hint": "仅在 Smoke 模式下生效"
+    },
+    {
+      "key": "task_types",
+      "label": "任务类别",
+      "type": "multiselect",
+      "group": "data",
+      "default": [],
+      "dynamic_options": "task_types",
+      "hint": "不选 = 全部 3 类"
+    },
+    {
+      "key": "language",
+      "label": "指令语言",
+      "type": "select",
+      "group": "data",
+      "default": "en",
+      "options": [
+        { "value": "en", "label": "English" },
+        { "value": "cn", "label": "中文" }
+      ]
+    },
+    {
+      "key": "num_inference_steps",
+      "label": "采样步数",
+      "type": "int",
+      "group": "inference",
+      "default": 40,
+      "min": 10,
+      "max": 100
+    },
+    {
+      "key": "seed",
+      "label": "随机种子",
+      "type": "int",
+      "group": "inference",
+      "default": 42
+    },
+    {
+      "key": "full_gpu",
+      "label": "整模上 GPU（full-gpu）",
+      "type": "bool",
+      "group": "inference",
+      "default": true,
+      "hint": "默认整模上 GPU（约 60G+/卡、出图更快）；关闭则 CPU offload（约 40G/卡）"
+    },
+    {
+      "key": "judge_model",
+      "label": "裁判模型",
+      "type": "select",
+      "group": "eval",
+      "default": "",
+      "dynamic_options": "judge_models",
+      "hint": "留空则使用顶部「裁判配置」中的全局默认"
+    },
+    {
+      "key": "eval_nproc",
+      "label": "评测并发数",
+      "type": "int",
+      "group": "eval",
+      "default": 8,
+      "min": 1,
+      "max": 32
+    },
+    {
+      "key": "gen_only",
+      "label": "仅生成（不评测）",
+      "type": "bool",
+      "group": "advanced",
+      "default": false
+    },
+    {
+      "key": "eval_only",
+      "label": "仅评测（跳过生成）",
+      "type": "bool",
+      "group": "advanced",
+      "default": false
+    }
+  ]
+}
